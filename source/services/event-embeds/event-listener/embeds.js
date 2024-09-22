@@ -2,7 +2,7 @@
 
 const { EmbedBuilder } = require('discord.js');
 
-const createStatusEmbed = async () => {
+const createStatusSetupEmbed = async () => {
     return new EmbedBuilder()
         .setDescription("**Server Status Information**\nStatus page installing. Every few minutes, this page will update. Displaying accurate and updated server information. \n\n(e.g. Server state, Player data, etc.)\n\n**[Partnership Commission](https://nitra.do/obeliskdevelopment)**\nConsider using our partnership link to purchase your servers, we will receive partial commission!")
         .setFooter({ text: 'Note: Contact support if issues persist.' })
@@ -27,6 +27,4 @@ const createLoggingEmbed = async () => {
 }
 
 
-
-
-module.exports = { createStatusEmbed, createDonationEmbed, createLoggingEmbed };
+module.exports = { createStatusSetupEmbed, createDonationEmbed, createLoggingEmbed };
