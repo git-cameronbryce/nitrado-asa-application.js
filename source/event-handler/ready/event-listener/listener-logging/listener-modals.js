@@ -1,6 +1,6 @@
 // noinspection JSCheckFunctionSignatures,JSUnresolvedReference,SpellCheckingInspection,EqualityComparisonWithCoercionJS
 
-const { createLoggingThreadDuplicateEmbed, createLoggingCreationEmbed, createLoggingThreadEmbed, createLoggingQueryEmbed } = require('../../../../services/event-embeds/event-logging/embeds');
+const { createLoggingThreadDuplicateEmbed, createLoggingThreadInvalidEmbed, createLoggingCreationEmbed, createLoggingThreadEmbed, createLoggingQueryEmbed } = require('../../../../services/event-embeds/event-logging/embeds');
 const { getGameservers } = require('../../../../services/requests/getGameservers')
 const { getServices } = require('../../../../services/requests/getServices');
 
@@ -12,7 +12,7 @@ module.exports = (client) => {
         if (interaction.isModalSubmit()) {
 
             if (interaction.customId === 'asa-modal-manual-setup') {
-                await interaction.deferReply();
+                await interaction.deferReply({ ephemeral: true });
 
                 const input = {
                     identifier: interaction.fields.getTextInputValue('asa-gameserver-identifier-required')
@@ -23,19 +23,20 @@ module.exports = (client) => {
                 await Promise.all(Object.values(reference.nitrado)?.map(async token => {
                     const services = await getServices(token);
 
+                    let isValid = false;
                     await Promise.all(services.map(async service => {
                         if (input.identifier != service) return;
-                        console.log(input.identifier);
 
-                        let duplicate = false;
+                        isValid = true;
+                        let isDuplicate = false;
                         Object.entries(reference.admin || {}).map(async ([key, value]) => {
 
                             if (key == input.identifier) {
-                                duplicate = true; await interaction.followUp({ embeds: [await createLoggingThreadDuplicateEmbed()] });
+                                isDuplicate = true; await interaction.followUp({ embeds: [await createLoggingThreadDuplicateEmbed()] });
                             }
                         })
 
-                        if (duplicate) return;
+                        if (isDuplicate) return;
                         const gameservers = await getGameservers(token, service);
 
                         const { gameserver: { service_id, query }} = gameservers;
@@ -78,8 +79,10 @@ module.exports = (client) => {
                         await db.collection('asa-configuration').doc(interaction.guild.id).set(data, { merge: true })
                             .then(() => { console.log('Database Logging Finished:') });
 
-                        await interaction.followUp({ embeds: [await createLoggingCreationEmbed()], ephemeral: true})
+                        await interaction.followUp({ embeds: [await createLoggingCreationEmbed()] });
                     }));
+
+                    if (!isValid) await interaction.followUp({ embeds: [await createLoggingThreadInvalidEmbed()] });
                 }));
             }
         }

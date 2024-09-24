@@ -9,6 +9,13 @@ const createLoggingThreadDuplicateEmbed = async () => {
         .setColor(0xe67e22);
 }
 
+const createLoggingThreadInvalidEmbed = async () => {
+    return new EmbedBuilder()
+        .setDescription("**Invalid Gameserver Detected**\nGameserver identifier is not correct.\n\n**Additional Information**\nEnsure you copied the right identifier.\nRefer to them on your status page.")
+        .setFooter({ text: 'Note: Contact support if issues persist.' })
+        .setColor(0xe67e22);
+}
+
 const createLoggingCreationEmbed = async () => {
     return new EmbedBuilder()
         .setDescription(`**Action Authorization Granted**\nGameserver has been stored in database.\nRequested thread will now be generated.\n\`🔐\` \`Command Executed: Locked\`\n\n**Additional Information**\nLogs can take upwards of 5m to update.\nEnsure your server has logging enabled.`)
@@ -46,6 +53,7 @@ const createLoggingParseEmbed = async (output) => {
 
 module.exports = {
     createLoggingThreadDuplicateEmbed,
+    createLoggingThreadInvalidEmbed,
     createLoggingCreationEmbed,
     createLoggingOnlineEmbed,
     createLoggingThreadEmbed,
