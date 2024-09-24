@@ -34,8 +34,6 @@ const processChatLogging = (client, chat, service_id, response) => {
             }
         }
     })
-
-    console.log(loggingData); // Moved inside the function
 };
 
 module.exports = { processChatLogging };

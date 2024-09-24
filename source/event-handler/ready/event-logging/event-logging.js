@@ -8,8 +8,8 @@ const { getGameservers } = require('../../../services/requests/getGameservers');
 const { db } = require('../../../script.js');
 const { Rcon } = require('rcon-client');
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', () => {
+    console.log('unhandledRejection');
 });
 
 module.exports = (client) => {
@@ -47,18 +47,16 @@ module.exports = (client) => {
                         });
 
                         rcon.on('error', (error) => {
-                            console.log(`RCON error on service ${service_id}:`, error.message);
+                            console.log('rcon.on(error)')
                         });
 
                         rcon.on('end', () => {
-                            console.log('RCON connection closed');
+                            console.log('rcon.on(end)')
                         });
 
                         await rcon.connect();
-                    }).catch(error => {
-                        console.log(`Promise error: ${error.message}`);
-                    });
 
+                    }).catch(error => { console.log(error); });
                 }));
             }));
         }));

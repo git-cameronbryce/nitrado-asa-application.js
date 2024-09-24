@@ -7,6 +7,10 @@ const { createStatusUpdateEmbed } = require('../../../services/event-embeds/even
 const { ButtonKit } = require('commandkit');
 const { ButtonStyle, ActionRowBuilder } = require('discord.js');
 
+process.on('unhandledRejection', () => {
+    console.log('unhandledRejection');
+});
+
 module.exports = (client) => {
     const loop = async () => {
 
