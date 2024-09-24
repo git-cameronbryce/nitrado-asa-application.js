@@ -1,6 +1,6 @@
 // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
 
-const { createPlayerManagementEmbed, createPlayerManagementAuditEmbed } = require('../../services/command-embeds/command-player/embeds');
+const { createPlayerManagementEmbed, createPlayerManagementAuditEmbed, createMissingRoleEmbed } = require('../../services/command-embeds/command-player/embeds');
 const { getGameservers } = require('../../services/requests/getGameservers');
 const { getServices } = require('../../services/requests/getServices');
 const { SlashCommandBuilder } = require('discord.js');
@@ -16,6 +16,15 @@ module.exports = {
             .addChoices({ name: 'Breaking Rules', value: 'breaking rules' }, { name: 'Cheating', value: 'cheating' }, { name: 'Behavior', value: 'behavior' }, { name: 'Meshing', value: 'meshing' }, { name: 'Other', value: 'other reasons' })),
 
     run: async ({ interaction, client }) => {
+
+        let hasRole = false;
+        await interaction.guild.roles.fetch().then(async roles => {
+            const role = roles.find(role => role.name === 'AS:A Obelisk Permission');
+            if (interaction.member.roles.cache.has(role.id)) hasRole = true;
+        });
+
+        if (!hasRole) return await interaction.reply({ embeds: [await createMissingRoleEmbed()], ephemeral: true });
+
         await interaction.deferReply();
 
         const input = {
@@ -46,17 +55,22 @@ module.exports = {
                         const response = await rcon.send(`BanPlayer ${input.username}`);
                         response.trim() === `${input.username} Banned` && success++;
 
-                    } catch (error) { if (error.code === 'ETIMEDOUT') console.log('Unable to establish connection.'); }
+                    } catch (error) {
+                        if (error.code === 'ECONNRESET') console.log('Unable to establish connection.');
+                        if (error.code === 'ETIMEDOUT') console.log('Unable to establish connection.');
+                    }
 
                 }).catch(error => { console.log(error); });
             }));
 
             await interaction.followUp({ embeds: [await createPlayerManagementEmbed(success, services, token)] });
 
-            const channel = await client.channels.fetch(player.channel);
+            try {
+                if (success === 0) return;
+                const channel = await client.channels.fetch(player.channel);
+                await channel.send({ embeds: [await createPlayerManagementAuditEmbed(input, success, services, token)]})
 
-            await channel.send({ embeds: [await createPlayerManagementAuditEmbed(input, success, services, token)]})
-
+            } catch (error) { if (error.code === 10003) console.log('Unable to fetch audit channel.'); }
         })
     },
 
