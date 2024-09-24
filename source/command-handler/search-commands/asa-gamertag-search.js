@@ -1,6 +1,7 @@
 // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
 
 const { createPlayerSearchEmbed } = require('../../services/command-embeds/command-search/embeds');
+const { createMissingRoleEmbed } = require('../../services/command-embeds/command-player/embeds');
 const { getGameservers } = require('../../services/requests/getGameservers');
 const { getServices } = require('../../services/requests/getServices');
 const { SlashCommandBuilder } = require('discord.js');
@@ -19,6 +20,15 @@ module.exports = {
         .addStringOption(option => option.setName('username').setDescription('Selected action will be performed on given tag.').setRequired(true)),
 
     run: async ({ interaction }) => {
+
+        let hasRole = false;
+        await interaction.guild.roles.fetch().then(async roles => {
+            const role = roles.find(role => role.name === 'AS:A Obelisk Permission');
+            if (interaction.member.roles.cache.has(role.id)) hasRole = true;
+        });
+
+        if (!hasRole) return await interaction.reply({ embeds: [await createMissingRoleEmbed()], ephemeral: true });
+
         await interaction.deferReply();
 
         const input = {
@@ -38,7 +48,7 @@ module.exports = {
                 totalGameservers++;
 
                 const { ip, rcon_port, service_id, config } = gameservers;
-                console.log(config['current-admin-password'], service, ip);
+                // console.log(config['current-admin-password'], service, ip);
 
                 await new Promise(async (resolve) => {
                     setTimeout(() => resolve(), 1250);
@@ -61,7 +71,10 @@ module.exports = {
                         console.log(response);
                         if (results.length > 0) { playerData.push(...results); }
 
-                    } catch (error) { if (error.code === 'ETIMEDOUT') console.log('Unable to establish connection.'); }
+                    } catch (error) {
+                        if (error.code === 'ECONNRESET') console.log('Unable to establish connection.');
+                        if (error.code === 'ETIMEDOUT') console.log('Unable to establish connection.');
+                    }
 
                 }).catch(error => { console.log(error); });
             }));
