@@ -4,7 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 
 const createLoggingThreadDuplicateEmbed = async () => {
     return new EmbedBuilder()
-        .setDescription("**Duplicate Gameserver Detected**\nGameserver data stored in database.\nLogging is currently being captured. \n\n**Additional Information**\nLogs can take upwards of 5m to update.\nEnsure your server has logging enabled.")
+        .setDescription("**Duplicate Gameserver Detected**\nGameserver is stored in the database.\nLogging is currently being captured.\n\n**Additional Information**\nLogs can take upwards of 5m to update.\nEnsure your server has logging enabled.")
         .setFooter({ text: 'Note: Contact support if issues persist.' })
         .setColor(0xe67e22);
 }
