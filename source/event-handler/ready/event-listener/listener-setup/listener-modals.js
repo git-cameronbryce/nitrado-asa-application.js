@@ -13,6 +13,10 @@ module.exports = (client) => {
             if (interaction.customId === 'asa-modal-setup') {
                 await interaction.deferReply({ ephemeral: true })
 
+                const roles = await interaction.guild.roles.fetch();
+                const action = roles.map(async role => role.name === 'AS:A Obelisk Permission' ? await role.delete() : null);
+                try { await Promise.all(action) } catch (error) { return await interaction.followUp({ content: 'In your settings, move the bot role higher.' }) }
+
                 if (!interaction.guild.features.includes('COMMUNITY')) {
                     return await interaction.followUp({ content: 'Setup failure, ensure you set your server to community.' })
                 }
@@ -54,7 +58,7 @@ module.exports = (client) => {
                     .setDisabled(true);
 
                 const support = new ButtonKit()
-                    .setURL('https://discord.gg/VQanyb23Rn')
+                    .setURL('https://discord.gg/tGNNVRFS')
                     .setStyle(ButtonStyle.Link)
                     .setLabel('Support Server');
 
@@ -71,9 +75,9 @@ module.exports = (client) => {
                     .then(async () => {
                         await interaction.followUp({ content: "Proceeding with installation...", ephemeral: true });
 
-                        const roles = await interaction.guild.roles.fetch();
-                        const action = roles.map(async role => role.name === 'AS:A Obelisk Permission' ? await role.delete() : null);
-                        try { await Promise.all(action) } catch (error) { return await interaction.followUp({ content: 'In your settings, move the bot role higher.' }) }
+                        // const roles = await interaction.guild.roles.fetch();
+                        // const action = roles.map(async role => role.name === 'AS:A Obelisk Permission' ? await role.delete() : null);
+                        // try { await Promise.all(action) } catch (error) { return await interaction.followUp({ content: 'In your settings, move the bot role higher.' }) }
 
                         await interaction.guild.roles.create({
                             name: 'AS:A Obelisk Permission',
