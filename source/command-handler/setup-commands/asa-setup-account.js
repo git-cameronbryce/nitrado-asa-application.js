@@ -17,7 +17,7 @@ module.exports = {
             .setStyle(ButtonStyle.Success);
 
         const secondaryButton = new ButtonKit()
-            .setURL('https://discord.gg/VQanyb23Rn')
+            .setURL('https://discord.gg/tGNNVRFS')
             .setLabel('Support Server')
             .setStyle(ButtonStyle.Link);
 
@@ -25,7 +25,7 @@ module.exports = {
             .addComponents(primaryButton, secondaryButton);
 
         const embed = new EmbedBuilder()
-            .setDescription("**Ark Survival Evolved**\n**Cluster Setup & Overview**\nThank you for choosing our service. Below, you'll have the option to link your token, along with a [video preview](https://imgur.com/a3b9GkZ) to display the process.\n\n**Additional Information**\nEnsure this guild is a [community](https://i.imgur.com/q8ElPKj.mp4) server, otherwise, the bot will not be able to integrate properly.\n\n**[Partnership & Affiliation](https://nitra.do/obeliskdevelopment)**\nConsider using our partnership link to purchase your servers, we will receive partial commission!")
+            .setDescription("**Ark Survival Ascended**\n**Cluster Setup & Overview**\nThank you for choosing our service. Below, you'll have the option to link your token, along with a [video preview](https://imgur.com/a3b9GkZ) to display the process.\n\n**Additional Information**\nEnsure this guild is a [community](https://i.imgur.com/q8ElPKj.mp4) server, otherwise, the bot will not be able to integrate properly.\n\n**[Partnership & Affiliation](https://nitra.do/obeliskdevelopment)**\nConsider using our partnership link to purchase your servers, we will receive partial commission!")
             .setFooter({ text: 'Note: Contact support if issues persist.' })
             .setImage('https://i.imgur.com/bFyqkUS.png')
             .setColor(0x2ecc71);

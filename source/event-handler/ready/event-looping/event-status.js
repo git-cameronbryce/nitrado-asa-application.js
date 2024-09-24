@@ -91,7 +91,7 @@ module.exports = (client) => {
                     .setLabel('Cluster Command')
 
                 const secondaryButton = new ButtonKit()
-                    .setURL('https://discord.gg/VQanyb23Rn')
+                    .setURL('https://discord.gg/tGNNVRFS')
                     .setStyle(ButtonStyle.Link)
                     .setLabel('Support Server');
 
@@ -108,5 +108,5 @@ module.exports = (client) => {
         setTimeout(loop, 60000);
     };
 
-    // loop().then(() => console.log('Status loop started...'));
+    loop().then(() => console.log('Status loop started...'));
 };
