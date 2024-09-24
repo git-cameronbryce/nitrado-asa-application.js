@@ -26,5 +26,4 @@ const createLoggingEmbed = async () => {
         .setColor(0x2ecc71);
 }
 
-
 module.exports = { createStatusSetupEmbed, createDonationEmbed, createLoggingEmbed };

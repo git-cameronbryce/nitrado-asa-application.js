@@ -1,6 +1,6 @@
 // noinspection JSCheckFunctionSignatures,JSUnresolvedReference,SpellCheckingInspection
 
-const { createStatusEmbed, createDonationEmbed, createLoggingEmbed } = require('../../../../services/event-embeds/event-listener/embeds');
+const { createStatusSetupEmbed, createDonationEmbed, createLoggingEmbed } = require('../../../../services/event-embeds/event-listener/embeds');
 const { Events, ButtonStyle, ChannelType, ActionRowBuilder, EmbedBuilder} = require('discord.js');
 const { FieldValue } = require('firebase-admin/firestore');
 const { db } = require('../../../../script');
@@ -72,16 +72,16 @@ module.exports = (client) => {
                         await interaction.followUp({ content: "Proceeding with installation...", ephemeral: true });
 
                         const roles = await interaction.guild.roles.fetch();
-                        const action = roles.map(async role => role.name === 'AS:E Obelisk Permission' ? await role.delete() : null);
+                        const action = roles.map(async role => role.name === 'AS:A Obelisk Permission' ? await role.delete() : null);
                         try { await Promise.all(action) } catch (error) { return await interaction.followUp({ content: 'In your settings, move the bot role higher.' }) }
 
                         await interaction.guild.roles.create({
-                            name: 'AS:E Obelisk Permission',
+                            name: 'AS:A Obelisk Permission',
                             color: '#ffffff',
                         });
 
                         const donationCategory = await interaction.guild.channels.create({
-                            name: `AS:E Donation Overview`,
+                            name: `AS:A Donation Overview`,
                             type: ChannelType.GuildCategory,
                         });
 
@@ -92,7 +92,7 @@ module.exports = (client) => {
                         });
 
                         const statusCategory = await interaction.guild.channels.create({
-                            name: `AS:E Status Overview`,
+                            name: `AS:A Status Overview`,
                             type: ChannelType.GuildCategory,
                         });
 
@@ -111,7 +111,7 @@ module.exports = (client) => {
                         });
 
                         const auditLoggingCategory = await interaction.guild.channels.create({
-                            name: `AS:E Audit Logging`,
+                            name: `AS:A Audit Logging`,
                             type: ChannelType.GuildCategory,
                         });
 
@@ -130,7 +130,7 @@ module.exports = (client) => {
                         });
 
                         const gameLoggingCategory = await interaction.guild.channels.create({
-                            name: `AS:E Game Logging`,
+                            name: `AS:A Game Logging`,
                             type: ChannelType.GuildCategory,
                         });
 
@@ -162,9 +162,9 @@ module.exports = (client) => {
                             topic: 'Channel designed for organization, setup your logging here.'
                         });
 
-                        const statusMessage = await statusChannel.send({ embeds: [await createStatusEmbed()] });
+                        const statusMessage = await statusChannel.send({ embeds: [await createStatusSetupEmbed()] });
 
-                        await donationChannel.send({ embeds: [await createDonationEmbed()] });
+                        await donationChannel.send({ embeds: [await createDonationEmbed()], content: 'https://buymeacoffee.com/cameronbryce'});
 
                         const loggingPrimaryButton = new ButtonKit()
                             .setCustomId('asa-automatic-setup')

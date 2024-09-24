@@ -8,4 +8,20 @@ const createStatusUpdateEmbed = async (output, overallCurrent, overallMax) => {
         .setColor(0x2ecc71);
 }
 
-module.exports = { createStatusUpdateEmbed };
+const createClusterCommandUpdateEmbed = (success) => {
+    return new EmbedBuilder()
+        .setDescription(`**Pending Action Authorization**\nGrant permission to access your services.\nPerform a cluster-wide server action.\n\`🟢\` \`${success} Gameservers Executing\`\n\n**Additional Information**\nDelete this message to return.`)
+        .setFooter({ text: 'Note: Contact support if issues persist.' })
+        .setColor(0x2ecc71);
+}
+
+const createClusterCommandEmbed = (pendingGameservers) => {
+    return new EmbedBuilder()
+        .setDescription(`**Pending Action Authorization**\nGrant permission to access your services.\nPerform a cluster-wide server action.\n\`🟠\` \`${pendingGameservers} Gameservers Pending\`\n\n**Additional Information**\nDelete this message to return.`)
+        .setFooter({ text: 'Note: Contact support if issues persist.' })
+        .setColor(0x2ecc71);
+}
+
+
+
+module.exports = { createStatusUpdateEmbed, createClusterCommandUpdateEmbed, createClusterCommandEmbed };

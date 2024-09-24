@@ -1,6 +1,6 @@
 // noinspection JSCheckFunctionSignatures,JSUnresolvedReference
 
-const { createPlayerManagementEmbed } = require('../../services/command-embeds/command-player/embeds');
+const { createPlayerManagementEmbed, createMissingRoleEmbed } = require('../../services/command-embeds/command-player/embeds');
 const { getGameservers } = require('../../services/requests/getGameservers');
 const { getServices } = require('../../services/requests/getServices');
 const { SlashCommandBuilder } = require('discord.js');
@@ -14,6 +14,15 @@ module.exports = {
         .addStringOption(option => option.setName('username').setDescription('Selected action will be performed on given tag.').setRequired(true)),
 
     run: async ({ interaction }) => {
+
+        let hasRole = false;
+        await interaction.guild.roles.fetch().then(async roles => {
+            const role = roles.find(role => role.name === 'AS:A Obelisk Permission');
+            if (interaction.member.roles.cache.has(role.id)) hasRole = true;
+        });
+
+        if (!hasRole) return await interaction.reply({ embeds: [await createMissingRoleEmbed()], ephemeral: true });
+
         await interaction.deferReply();
 
         const input = {
@@ -44,8 +53,10 @@ module.exports = {
                         response.trim() === `${input.username} Unbanned` && success++;
 
                     } catch (error) {
+                        if (error.code === 'ECONNRESET') console.log('Unable to establish connection.');
                         if (error.code === 'ETIMEDOUT') console.log('Unable to establish connection.');
                     }
+
                 }).catch(error => { console.log(error); });
             }));
 

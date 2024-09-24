@@ -2,11 +2,23 @@
 
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder } = require('discord.js');
 const { Events, TextInputStyle } = require('discord.js');
+const { createMissingRoleEmbed } = require('../../../../services/command-embeds/command-player/embeds');
 
 module.exports = (client) => {
     client.on(Events.InteractionCreate, async (interaction) => {
-        if (interaction.isButton()) if (interaction.customId === 'asa-setup-token') {
-            const modal = new ModalBuilder()
+        if (interaction.isButton())
+
+            if (interaction.customId === 'asa-setup-token') {
+
+                let hasRole = false;
+                await interaction.guild.roles.fetch().then(async roles => {
+                    const role = roles.find(role => role.name === 'AS:A Obelisk Permission');
+                    if (interaction.member.roles.cache.has(role.id)) hasRole = true;
+                });
+
+                if (!hasRole) return await interaction.reply({ embeds: [await createMissingRoleEmbed()], ephemeral: true });
+
+                const modal = new ModalBuilder()
                 .setCustomId('asa-modal-setup')
                 .setTitle('Token Integration Process');
 

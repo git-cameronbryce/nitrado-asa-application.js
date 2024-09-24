@@ -10,9 +10,9 @@ const getGameservers = async (token, service) => {
         const url = `https://api.nitrado.net/services/${service}/gameservers`;
         const response = await http.get(url, { headers: { 'Authorization': token } });
 
-        const { ip, rcon_port, settings: { config }} = response.data.data.gameserver;
+        const { gameserver } = response.data.data;
 
-        return { ip, rcon_port, config };
+        return { gameserver };
 
     } catch (error) { console.log(error) }
 };
