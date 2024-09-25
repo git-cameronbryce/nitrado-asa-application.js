@@ -13,29 +13,14 @@ process.on('unhandledRejection', () => {
 
 module.exports = (client) => {
     const loop = async () => {
-
-        // Array to hold all the server data for sorting
-        let serverDataArray = [];
-
-        const ascendingFilterProcess = async (gameservers) => {
-            const { gameserver: { status, service_id, query } } = gameservers;
-
-            // Default values if there's an issue with data fetch
-            const server = query.server_name || 'Data Fetch Error - API Outage';
-            const playersCurrent = query.player_current || 0;
-            const playersMax = query.player_max || 0;
-
-            // Add the server data to the array, including status and player counts
-            serverDataArray.push({
-                server, status, service_id, playersCurrent, playersMax,
-            });
-        };
-
         const reference = await db.collection('asa-configuration').get();
 
         await Promise.all(reference.docs.map(async (doc) => {
             // Extract nitrado and status from Firestore document
             const { nitrado, status } = doc.data();
+
+            // Array to hold server data for the current document
+            let serverDataArray = [];
 
             await Promise.all(Object.values(nitrado).map(async token => {
                 try {
@@ -45,11 +30,21 @@ module.exports = (client) => {
                         await Promise.all(services.map(async service => {
                             const gameservers = await getGameservers(token, service);
 
-                            await ascendingFilterProcess(gameservers);
+                            const { gameserver: { status, service_id, query } } = gameservers;
+
+                            // Default values if there's an issue with data fetch
+                            const server = query.server_name || 'Data Fetch Error - API Outage';
+                            const playersCurrent = query.player_current || 0;
+                            const playersMax = query.player_max || 0;
+
+                            // Add the server data to the array, including status and player counts
+                            serverDataArray.push({
+                                server, status, service_id, playersCurrent, playersMax,
+                            });
                         }));
 
-                    } catch (error) { return console.log('Unable to establish connection: getGameservers()') }
-                } catch (error) { return console.log('Unable to establish connection: getServices()') }
+                    } catch (error) { console.log('Unable to establish connection: getGameservers()') }
+                } catch (error) { console.log('Unable to establish connection: getServices()') }
             }));
 
             // Sort the serverDataArray by playersCurrent in descending order (highest to lowest)
@@ -80,14 +75,14 @@ module.exports = (client) => {
                 }
             });
 
-            // Calculate overall current and maximum population
+            // Calculate overall current and maximum population for the current document
             const overallCurrent = serverDataArray.reduce((sum, server) => sum + server.playersCurrent, 0);
             const overallMax = serverDataArray.reduce((sum, server) => sum + server.playersMax, 0);
 
             // Log the final output
             try {
-                const channel = await client.channels.fetch(status.channel);  // Use status to access the channel
-                const message = await channel.messages.fetch(status.message); // Use status to access the message
+                const channel = await client.channels.fetch(status.channel);
+                const message = await channel.messages.fetch(status.message);
 
                 const primaryButton = new ButtonKit()
                     .setCustomId('asa-cluster-command')
@@ -105,7 +100,7 @@ module.exports = (client) => {
                 // Edit the message with the updated embed
                 await message.edit({ embeds: [await createStatusUpdateEmbed(output, overallCurrent, overallMax)], components: [row] });
 
-            } catch (error) { console.error('Error fetching or editing message:'); }
+            } catch (error) { console.error('Error fetching or editing message:', error); }
         }));
 
         // Restart the loop after 60 seconds
